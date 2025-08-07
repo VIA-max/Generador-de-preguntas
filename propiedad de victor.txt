@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generador de Preguntas</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f2f2f2; }
+    textarea { width: 100%; height: 150px; padding: 10px; }
+    button { margin-top: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    .pregunta-container { margin-top: 20px; background-color: #fff; padding: 15px; border-radius: 8px; }
+    .opcion { display: block; margin: 5px 0; }
+    .historial-container { margin-top: 30px; padding: 15px; background-color: #e0e0e0; border-radius: 8px; }
+    .historial-item { margin-bottom: 10px; }
+    .mensaje-final { margin-top: 20px; font-weight: bold; font-size: 18px; color: #333; }
+  </style>
+</head>
+<body>
+  <h2>Pega tu texto:</h2>
+  <textarea id="texto" placeholder="Escribe o pega tu texto aquí..."></textarea><br>
+  <button onclick="generarPregunta()">Generar pregunta</button>
+
+  <div class="pregunta-container" id="pregunta"></div>
+  <div class="mensaje-final" id="mensajeFinal"></div>
+
+  <div class="historial-container">
+    <h3>Historial de textos:</h3>
+    <div id="historial"></div>
+  </div>
+
+  <script>
+    const historial = [];
+
+const mensajesDonacion = [
+  "😄 ¡Wow! Con tu apoyo podremos comprar más café para seguir programando sin dormir.",
+  "😂 Tu donación fue tan buena que casi lloro... pero de felicidad.",
+  "🎉 ¡Muchísimas gracias por tu apoyo! Significa mucho para este proyecto.",
+  "🥳 ¡Qué alegría recibir tu donación! Nos das energía para seguir mejorando.",
+  "🌌 Gracias de corazón. Tu generosidad es una chispa que inspira a seguir creando."
+];
+    let puntaje = 0;
+    let intentos = 0;
+
+    const mensajesExito = [
+  "🎉 ¡Increíble! Lograste un 100%. ¡Sigue así!",
+  "🚀 ¡Excelente trabajo! Respondiste todo correctamente.",
+  "🔝 Tu dedicación se nota. Sigue con esa actitud y llegarás lejos.",
+  "🌟 Tu esfuerzo y concentración rindieron frutos. ¡Felicitaciones!",
+  "🧠 ¿Cómo es que eres tan inteligente? Cuéntame tu secreto 😄",
+  "😲 ¡Lo respondiste todo bien! ¿Estás usando magia o qué?",
+  "📚 Tu mente es como una biblioteca bien organizada. ¡Impresionante!"
+];
+
+    const mensajesError = [
+  "😓 No fue tu mejor intento, pero puedes mejorar. ¡Sigue practicando!",
+  "💡 Ánimo, cada error es una oportunidad para aprender.",
+  "🔁 Fallaste esta vez, ¡pero la próxima lo harás mejor!",
+  "🌱 Incluso los más grandes comienzan fallando. Lo importante es levantarse y seguir.",
+  "🧠 No se trata de saberlo todo, sino de tener la valentía de aprender con cada paso.",
+  "🔥 Cada paso que das en la oscuridad, te acerca más a la luz. No te rindas.",
+  "📈 El fracaso no te define, pero cómo te levantas sí lo hará. Sigue adelante."
+];
+
+    const mensajesMejorables = [
+  "👍 Buen trabajo, pero aún puedes mejorar un poco más.",
+  "📘 Estás en buen camino, pero puedes perfeccionarlo.",
+  "✅ Casi perfecto, ¡solo un poco más de práctica!",
+  "🔍 No se trata solo de acertar, sino de entender. ¡Sigue esforzándote!",
+  "✨ Estás avanzando bien. Cada intento te está haciendo más fuerte.",
+  "🛠️ Vas por buen camino. ¡Pulir los detalles marca la diferencia!",
+  "💪 Cada paso suma. Tu constancia está construyendo grandes resultados."
+];
+
+    function generarPregunta() {
+      const texto = document.getElementById("texto").value;
+      document.getElementById("mensajeFinal").textContent = "";
+      intentos = 0;
+      puntaje = 0;
+
+      if (texto.trim() !== "") {
+        historial.push(texto);
+        actualizarHistorial();
+      }
+
+      const pregunta = "¿Cuál es el tema principal del texto?";
+      const opciones = ["Educación", "Tecnología", "Medio ambiente", "Política"];
+      const respuestaCorrecta = "Tecnología";
+
+      let html = "<h3>" + pregunta + "</h3>";
+      opciones.forEach(op => {
+        html += `<button class='opcion' onclick="evaluarRespuesta('${op}', '${respuestaCorrecta}', this)">${op}</button>`;
+      });
+
+      document.getElementById("pregunta").innerHTML = html;
+    }
+
+    function evaluarRespuesta(respuestaUsuario, respuestaCorrecta, boton) {
+      intentos++;
+      if (respuestaUsuario === respuestaCorrecta) {
+        puntaje++;
+        alert("✅ ¡Correcto!");
+      } else {
+        alert("❌ Incorrecto. La respuesta correcta es: " + respuestaCorrecta);
+      }
+
+      mostrarMensajeFinal();
+    }
+
+    function mostrarMensajeFinal() {
+      if (intentos >= 1) {
+        let mensaje = "";
+        if (puntaje === intentos) {
+          mensaje = mensajesExito[Math.floor(Math.random() * mensajesExito.length)];
+        } else if (puntaje === 0) {
+          mensaje = mensajesError[Math.floor(Math.random() * mensajesError.length)];
+        } else {
+          mensaje = mensajesMejorables[Math.floor(Math.random() * mensajesMejorables.length)];
+        }
+        document.getElementById("mensajeFinal").textContent = mensaje;
+      }
+    }
+
+    function actualizarHistorial() {
+      const historialDiv = document.getElementById("historial");
+      historialDiv.innerHTML = "";
+      historial.slice().reverse().forEach((item, index) => {
+        const p = document.createElement("p");
+        p.className = "historial-item";
+        p.textContent = `(${historial.length - index}) ${item.substring(0, 100)}...`;
+        historialDiv.appendChild(p);
+      });
+    }
+  </script>
+  <div style="margin-top: 40px; text-align: center;">
+  <h3>¿Quieres apoyar este proyecto?</h3>
+  <p>Tu donación nos ayuda a seguir mejorando esta herramienta educativa.</p>
+  <a href="https://ko-fi.com/victor1629" target="_blank" onclick="mostrarMensajeDonacion()">
+    <img src="https://storage.ko-fi.com/cdn/kofi3.png?v=3" height="45" alt="Invítame un café en Ko-fi">
+  </a>
+  <p style="margin-top: 20px;">También puedes donar por <strong>Yape</strong> al número:</p>
+  <p style="font-size: 20px; font-weight: bold;">953 567 383</p>
+</div>
+  <script>
+    // Mostrar agradecimiento aleatorio al cargar la página si se desea simular donación
+    function mostrarMensajeDonacion() {
+      const mensaje = mensajesDonacion[Math.floor(Math.random() * mensajesDonacion.length)];
+      alert(mensaje);
+    }
+    // Llama esta función manualmente después de una donación o con un botón si lo deseas
+    // mostrarMensajeDonacion();
+  </script>
+</body>
+</html>
